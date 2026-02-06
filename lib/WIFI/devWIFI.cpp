@@ -75,7 +75,7 @@ static const char *wifi_ap_ssid = "ExpressLRS Timer Backpack";
 #else
 #error Unknown target
 #endif
-static const char *wifi_ap_password = "expresslrs";
+static const char *wifi_ap_password = "RedwireDT1867";
 
 static char station_ssid[33];
 static char station_password[65];
@@ -788,7 +788,7 @@ static void HandleWebUpdate()
         else if (wifiService == WIFI_SERVICE_MAVLINK_TX)
         {
           // Generate a unique SSID using config.address as hex
-          sprintf(wifi_ap_ssid, "ExpressLRS TX Backpack %02X%02X%02X",
+          sprintf(wifi_ap_ssid, "Wendigo TelemAP %02X%02X%02X",
             firmwareOptions.uid[3],
             firmwareOptions.uid[4],
             firmwareOptions.uid[5]
