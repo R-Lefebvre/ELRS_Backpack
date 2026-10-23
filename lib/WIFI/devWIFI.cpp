@@ -67,7 +67,7 @@ static const char *myHostname = "elrs_vrx";
 static const char *wifi_ap_ssid = "ExpressLRS VRx Backpack";
 #elif defined(TARGET_TX_BACKPACK)
 static const char *myHostname = "elrs_txbp";
-static char wifi_ap_ssid[33]; // will be set depending on wifiService
+static const char *wifi_ap_ssid = "MaxxumRobotics TelemAP";
 
 #elif defined(TARGET_TIMER_BACKPACK)
 static const char *myHostname = "elrs_timer";
@@ -75,7 +75,16 @@ static const char *wifi_ap_ssid = "ExpressLRS Timer Backpack";
 #else
 #error Unknown target
 #endif
+#if defined(TARGET_TX_BACKPACK)
+#ifndef TX_BACKPACK_AP_PASSWORD
+#error Set TX_BACKPACK_AP_PASSWORD in super_defines.txt before building
+#endif
+static const char wifi_ap_password[] = {TX_BACKPACK_AP_PASSWORD, 0};
+static_assert(sizeof(wifi_ap_password) >= 9 && sizeof(wifi_ap_password) <= 64,
+              "TX Backpack AP password must contain 8 to 63 bytes");
+#else
 static const char *wifi_ap_password = "expresslrs";
+#endif
 
 static char station_ssid[33];
 static char station_password[65];
@@ -836,21 +845,6 @@ static void HandleWebUpdate()
         #endif
         changeTime = now;
         WiFi.softAPConfig(apIP, apIP, netMsk);
-#if defined(TARGET_TX_BACKPACK)
-        if (wifiService == WIFI_SERVICE_UPDATE)
-        {
-          strcpy(wifi_ap_ssid, "ExpressLRS TX Backpack");
-        }
-        else if (wifiService == WIFI_SERVICE_MAVLINK_TX)
-        {
-          // Generate a unique SSID using config.address as hex
-          sprintf(wifi_ap_ssid, "ExpressLRS TX Backpack %02X%02X%02X",
-            firmwareOptions.uid[3],
-            firmwareOptions.uid[4],
-            firmwareOptions.uid[5]
-          );
-        }
-#endif
         WiFi.softAP(wifi_ap_ssid, wifi_ap_password);
         WiFi.scanNetworks(true);
         startServices();
